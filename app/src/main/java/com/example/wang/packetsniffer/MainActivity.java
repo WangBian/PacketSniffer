@@ -4,6 +4,9 @@ import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
+import android.widget.TextView;
 
 public class MainActivity extends ActionBarActivity {
 
@@ -34,4 +37,13 @@ public class MainActivity extends ActionBarActivity {
 
         return super.onOptionsItemSelected(item);
     }
+
+    public void startButtonOnClick(View view){
+        ((TextView)findViewById(R.id.progressView)).setText("IN PROGRESS");
+    }
+
+    public void stopButtonOnClick(View view) {
+        ((TextView) findViewById(R.id.progressView)).setText("COMPLETED");
+    }
+
 }
