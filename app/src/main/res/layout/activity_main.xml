@@ -58,6 +58,28 @@
         android:background="@android:color/white"
         android:layout_toRightOf="@+id/startButton"
         android:layout_toEndOf="@+id/startButton"
-        android:layout_alignParentTop="true" />
+        android:layout_below="@+id/titleView" />
+
+    <ListView
+        android:id="@+id/listView1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/startButton"
+        android:layout_toEndOf="@+id/startButton"
+        android:layout_below="@+id/titleView">
+    </ListView>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text=" Time    Source     Protocal         Length      Status"
+        android:id="@+id/titleView"
+        android:layout_alignParentTop="true"
+        android:textSize="20dp"
+        android:background="@android:color/holo_green_light"
+        android:layout_toRightOf="@+id/startButton"
+        android:layout_alignRight="@+id/trafficView"
+        android:layout_alignEnd="@+id/trafficView" />
+
 
 </RelativeLayout>
