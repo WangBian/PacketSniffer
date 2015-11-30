@@ -121,9 +121,9 @@ public class MainActivity extends ActionBarActivity {
                 temp.put(THIRD_COLUMN, proto);
                 temp.put(FOURTH_COLUMN, len);
 
-//                if(malIP.contains(source)){
-//                    status = "Malicious";
-//                }
+                if(malIP.contains(source)){
+                    status = "Malicious";
+                }
 
                 temp.put(FIFTH_COLUMN, status);
                 list.add(temp);
