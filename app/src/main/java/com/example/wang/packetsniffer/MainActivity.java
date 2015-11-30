@@ -17,6 +17,7 @@ import android.widget.Toast;
 
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -24,6 +25,7 @@ import java.io.InputStreamReader;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Scanner;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -34,11 +36,17 @@ import android.widget.Toast;
 
 public class MainActivity extends ActionBarActivity {
 
+    public Process process;
+    public int lenIndex;
+    public ArrayList<String> malIP;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        //createMalIP();
+        // Toast.makeText(getApplicationContext(), Integer.toString(malIP.size()), Toast.LENGTH_LONG).show();
+        //((TextView)findViewById(R.id.librarySizeView)).setText("Malicious IP amount: " + Integer.toString(malIP.size()));
     }
 
     @Override
@@ -63,12 +71,12 @@ public class MainActivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    Process process;
+
 
     public void startButtonOnClick(View view){
         ((TextView)findViewById(R.id.progressView)).setText("IN PROGRESS");
         try {
-            process = Runtime.getRuntime().exec(new String[]{"su", "-c", "chmod 777 /sdcard/programapp/tcpdump"});
+            //process = Runtime.getRuntime().exec(new String[]{"su", "-c", "chmod 777 /sdcard/programapp/tcpdump"});
             process = Runtime.getRuntime().exec(new String[]{"su", "-c", "tcpdump -v -n -i any -c 100 > /mnt/sdcard/programapp/output"});
         } catch (IOException e) {
             e.printStackTrace();
@@ -77,6 +85,12 @@ public class MainActivity extends ActionBarActivity {
 
     public void stopButtonOnClick(View view) {
         ((TextView) findViewById(R.id.progressView)).setText("COMPLETED");
+        // process.destroy();
+        try {
+            process.waitFor();
+        } catch (InterruptedException e){
+            e.printStackTrace();
+        }
         process.destroy();
         displayOutput();
     }
@@ -95,27 +109,23 @@ public class MainActivity extends ActionBarActivity {
             BufferedReader br = new BufferedReader(new InputStreamReader(fis));
             String line;
 
-//            line = br.readLine();
-//            text.append(line);
-
-
-//            temp.put(FIRST_COLUMN, "Ankit Karia");
-//            temp.put(SECOND_COLUMN, "Male");
-//            temp.put(THIRD_COLUMN, "22");
-//            temp.put(FOURTH_COLUMN, "Unmarried");
-//            list.add(temp);
-
             while ((line = br.readLine()) != null) {
                 HashMap<String,String> temp = new HashMap<String, String>();
                 String time = line.substring(0,8);
                 String proto = findProto(line);
                 String len = findLen(line);
                 String source = findSource(line);
+                String status = "Healthy";
                 temp.put(FIRST_COLUMN, time);
                 temp.put(SECOND_COLUMN, source);
                 temp.put(THIRD_COLUMN, proto);
                 temp.put(FOURTH_COLUMN, len);
-                temp.put(FIFTH_COLUMN, "Healthy");
+
+//                if(malIP.contains(source)){
+//                    status = "Malicious";
+//                }
+
+                temp.put(FIFTH_COLUMN, status);
                 list.add(temp);
 
 //                text.append(line);
@@ -141,17 +151,17 @@ public class MainActivity extends ActionBarActivity {
         output.setText(text);
     }
 
-    public String findProto (String s){
+    public String findProto (String s) {
         String proto = "";
 
         int len = s.length();
-        for(int i = 0; i < len; i++){
-            if(s.charAt(i) == 'p'){
-                if (s.charAt(i+1) == 'r'){
-                    if (s.charAt(i+2) == 'o'){
-                        if (s.charAt(i+3) == 't'){
-                            if (s.charAt(i+4) == 'o'){
-                                proto = s.substring(i+6, i+9);
+        for (int i = 0; i < len; i++) {
+            if (s.charAt(i) == 'p') {
+                if (s.charAt(i + 1) == 'r') {
+                    if (s.charAt(i + 2) == 'o') {
+                        if (s.charAt(i + 3) == 't') {
+                            if (s.charAt(i + 4) == 'o') {
+                                proto = s.substring(i + 6, i + 9);
                             }
                         }
                     }
@@ -161,8 +171,6 @@ public class MainActivity extends ActionBarActivity {
 
         return proto;
     }
-
-    int lenIndex;
 
     public String findLen (String s){
         String length = "0";
@@ -217,4 +225,20 @@ public class MainActivity extends ActionBarActivity {
         source = s.substring(start, end);
         return source;
     }
+
+    public void createMalIP(){
+        malIP = new ArrayList<>();
+        try {
+            Scanner s = new Scanner(new File("/mnt/sdcard/programapp/iplist.txt"));
+            while (s.hasNext()){
+                malIP.add(s.nextLine());
+            }
+            s.close();
+        } catch (FileNotFoundException e){
+            Toast.makeText(getApplicationContext(), "File Malicious IP List Not Found!", Toast.LENGTH_LONG).show();
+            e.printStackTrace();
+        }
+
+    }
+
 }
